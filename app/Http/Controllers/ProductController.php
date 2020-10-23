@@ -47,14 +47,17 @@ class ProductController extends Controller
     }
 
     public function cartList(){
-        $userid = Session::get('user')['id'];
-        $products = DB::table('cart')
-        ->join('products', 'cart.product_id', '=', 'products.id')
-        ->where('cart.user_id', $userid)
-        ->select('products.*', 'cart.id as cart_id')
-        ->get();
-
-        return view('cartlist', ['products'=>$products]);
+        if(session()->has('user')){
+            $userid = Session::get('user')['id'];
+            $products = DB::table('cart')
+            ->join('products', 'cart.product_id', '=', 'products.id')
+            ->where('cart.user_id', $userid)
+            ->select('products.*', 'cart.id as cart_id')
+            ->get();
+            return view('cartlist', ['products'=>$products]);
+        }else{
+            return view('cartlist', ['products'=>[]]); 
+        }
     }
 
     public function removeCart($id){
@@ -91,12 +94,15 @@ class ProductController extends Controller
     }
 
     public function myOrders(){
-        $userid = Session::get('user')['id'];
-        $orders = DB::table('orders')
-       ->join('products', 'orders.product_id', '=', 'products.id')
-       ->where('orders.user_id', $userid)
-       ->get();
-
-       return view('myorders', ['orders'=>$orders]);
+        if(session()->has('user')){
+            $userid = Session::get('user')['id'];
+            $orders = DB::table('orders')
+                        ->join('products', 'orders.product_id', '=', 'products.id')
+                        ->where('orders.user_id', $userid)
+                        ->get();
+            return view('myorders', ['orders'=>$orders]);
+        }else{
+            return view('myorders', ['orders'=>[]]);
+        }
     }
 }
